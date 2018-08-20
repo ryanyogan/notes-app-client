@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { Auth } from 'aws-amplify';
 import './Login.css';
 
 class Login extends Component {
@@ -16,9 +17,17 @@ class Login extends Component {
       [event.target.id]: event.target.value,
     });
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
+
+    try {
+      await Auth.signIn(this.state.email, this.state.password);
+      alert('Logged in...'); // eslint-disable-line
+    } catch (error) {
+      alert(error.message); // eslint-disable-line
+    }
   };
+
   render() {
     return (
       <div className="Login">
