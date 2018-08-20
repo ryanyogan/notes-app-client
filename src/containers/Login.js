@@ -22,7 +22,7 @@ class Login extends Component {
 
     try {
       await Auth.signIn(this.state.email, this.state.password);
-      alert('Logged in...'); // eslint-disable-line
+      this.props.userHasAuthenticated(true);
     } catch (error) {
       alert(error.message); // eslint-disable-line
     }
