@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
@@ -30,11 +30,11 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated });
 
   handleLogout = async event => {
-    event.preventDefault();
-
     await Auth.signOut();
 
     this.userHasAuthenticated(false);
+
+    this.props.history.push('/login');
   };
 
   render() {
@@ -77,4 +77,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);
