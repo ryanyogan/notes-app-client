@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { API } from 'aws-amplify';
 import LoaderButton from '../components/LoaderButton';
 import config from '../config';
 import './NewNote.css';
 
 class NewNote extends Component {
-  static file = null;
+  constructor(props) {
+    super(props);
+    this.file = null;
+  }
 
   state = {
     isLoading: null,
@@ -27,34 +31,51 @@ class NewNote extends Component {
       return;
     }
 
-    this.setState({ isLoading: false });
+    this.setState({ isLoading: true });
+
+    try {
+      await this.createNote({
+        content: this.state.content,
+      });
+      this.props.history.push('/');
+    } catch (error) {
+      alert(error); // eslint-disable-line
+      this.setState({ isLoading: false });
+    }
   };
+
+  createNote = note =>
+    API.post('notes', '/notes', {
+      body: note,
+    });
 
   render() {
     return (
       <div className="NewNote">
-        <FormGroup controlId="content">
-          <FormControl
-            onChange={this.handleChange}
-            value={this.state.content}
-            componentClass="textarea"
-          />
-        </FormGroup>
-        <FormGroup controlId="file">
-          <ControlLabel>Attachment</ControlLabel>
-          <FormControl onChange={this.handleFileChange} type="file" />
-        </FormGroup>
+        <form onSubmit={this.handleSubmit}>
+          <FormGroup controlId="content">
+            <FormControl
+              onChange={this.handleChange}
+              value={this.state.content}
+              componentClass="textarea"
+            />
+          </FormGroup>
+          <FormGroup controlId="file">
+            <ControlLabel>Attachment</ControlLabel>
+            <FormControl onChange={this.handleFileChange} type="file" />
+          </FormGroup>
 
-        <LoaderButton
-          block
-          bsStyle="primary"
-          bsSize="large"
-          disabled={!this.validateForm()}
-          type="submit"
-          isLoading={this.state.isLoading}
-          text="Create"
-          loadingText="Creating..."
-        />
+          <LoaderButton
+            block
+            bsStyle="primary"
+            bsSize="large"
+            disabled={!this.validateForm()}
+            type="submit"
+            isLoading={this.state.isLoading}
+            text="Create"
+            loadingText="Creating..."
+          />
+        </form>
       </div>
     );
   }
