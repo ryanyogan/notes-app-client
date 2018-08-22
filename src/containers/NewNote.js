@@ -3,6 +3,7 @@ import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { API } from 'aws-amplify';
 import LoaderButton from '../components/LoaderButton';
 import config from '../config';
+import { s3Upload } from '../libs/awsLib';
 import './NewNote.css';
 
 class NewNote extends Component {
@@ -34,9 +35,13 @@ class NewNote extends Component {
     this.setState({ isLoading: true });
 
     try {
+      const attachment = this.file ? await s3Upload(this.file) : null;
+
       await this.createNote({
+        attachment,
         content: this.state.content,
       });
+
       this.props.history.push('/');
     } catch (error) {
       alert(error); // eslint-disable-line
